@@ -1,0 +1,370 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Random;
+import java.util.Timer;
+import javax.sound.sampled.*;
+import java.io.*;
+import java.util.TimerTask;
+
+class Screen extends JFrame implements ActionListener {
+    JPanel scorePan;
+    JPanel ques;
+    JLabel quesNum;
+    JLabel timeCount;
+    JButton beginGame;
+    JLabel brainCells;
+
+    JPanel ans;
+    JPanel menu;
+    File aud = new File("theme.wav");
+    Clip clip1;
+
+    File aud2 = new File("tune.wav");
+    File aud3 = new File("ching-cheng-hanji.wav");
+
+    JButton option1;
+    JButton option2;
+    JButton option3;
+    JButton option4;
+    public String currentAnswer;
+    int flag = 0,score = 0;
+    Random r = new Random();
+    int randn;
+
+
+
+
+    Screen(Node n){
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setTitle("JARN QUIZ");
+        this.setSize(1000, 780);
+        this.setLayout(null);
+        this.setResizable(false);
+        ImageIcon img = new ImageIcon("icon-512.png");
+        this.setIconImage(img.getImage());
+        this.getContentPane().setBackground(Color.darkGray);
+
+        menu = new JPanel();
+        menu.setBackground(Color.darkGray);
+        menu.setLayout(null);
+        menu.setBounds(0,0,1000,780);
+        menu.setVisible(true);
+        this.add(menu);
+
+        beginGame = new JButton();
+        beginGame.setText("START");
+        beginGame.setBounds(320,290,380,180);
+        beginGame.setFocusable(false);
+        beginGame.setFont(new Font("Bookman Old Style",Font.PLAIN,35));
+        beginGame.setForeground(Color.darkGray);
+        beginGame.setBackground(Color.ORANGE);
+        beginGame.addActionListener(this);
+//        beginGame.setBounds(0,0,400,200);
+        beginGame.setHorizontalAlignment(JLabel.CENTER);
+        beginGame.setVerticalAlignment(JLabel.CENTER);
+        beginGame.setVisible(true);
+        menu.add(beginGame);
+
+        brainCells = new JLabel();
+        brainCells.setText("JARN QUIZ");
+        brainCells.setFont(new Font("Curlz MT",Font.PLAIN,150));
+        brainCells.setBounds(130,0,800,300);
+        brainCells.setForeground(Color.LIGHT_GRAY);
+        menu.add(brainCells);
+
+        scorePan = new JPanel();
+        scorePan.setBackground(Color.DARK_GRAY);
+        scorePan.setBounds(0,0,1000,50);
+        scorePan.setLayout(null);
+        this.add(scorePan);
+        scorePan.setVisible(false);
+
+
+        this.ques = new JPanel();
+        ques.setBackground(Color.LIGHT_GRAY);
+        ques.setLayout(new BorderLayout());
+        ques.setBounds(0,50,1000,200);
+        this.add(this.ques);
+        ques.setVisible(false);
+
+
+        timeCount = new JLabel();
+        timeCount.setText("Score: "+score);
+        timeCount.setFont(new Font("Franklin Gothic",Font.BOLD,28));
+        timeCount.setForeground(Color.ORANGE);
+        timeCount.setBounds(30,-25,400,100);
+        timeCount.setBackground(Color.BLACK);
+        scorePan.add(timeCount);
+        timeCount.setVisible(true);
+
+        this.quesNum = new JLabel();
+        quesNum.setText("1) what is the capital of France?");
+        quesNum.setFont(new Font("Copperplate Gothic",Font.BOLD,34));
+        quesNum.setHorizontalAlignment(JLabel.CENTER);
+        quesNum.setVerticalAlignment(JLabel.CENTER);
+        ques.add(quesNum);
+
+        this.ans = new JPanel();
+        ans.setBackground(Color.DARK_GRAY);
+        ans.setBounds(0,250,1000,720);
+        ans.setLayout(null);
+        this.add(this.ans);
+
+        option1 = new JButton();
+        option1.setText("Amsterdam");
+        option1.setBounds(90,50,380,180);
+        option1.setFocusable(false);
+        option1.setFont(new Font("Bookman Old Style",Font.PLAIN,35));
+        option1.setForeground(Color.darkGray);
+        option1.setBackground(Color.ORANGE);
+        option1.addActionListener(this);
+
+        option2 = new JButton();
+        option2.setText("Paris");
+        option2.setBounds(490,50,380,180);
+        option2.setFocusable(false);
+        option2.setFont(new Font("Bookman Old Style",Font.PLAIN,35));
+        option2.setForeground(Color.darkGray);
+        option2.setBackground(Color.ORANGE);
+        option2.addActionListener(this);
+
+
+        option3 = new JButton();
+        option3.setText("Belfast");
+        option3.setBounds(90,270,380,180);
+        option3.setFocusable(false);
+        option3.setFont(new Font("Bookman Old Style",Font.PLAIN,35));
+        option3.setBackground(Color.ORANGE);
+        option3.setForeground(Color.darkGray);
+        option3.addActionListener(this);
+
+
+        option4 = new JButton();
+        option4.setText("Dublin");
+        option4.setBounds(490,270,380,180);
+        option4.setFocusable(false);
+        option4.setFont(new Font("Bookman Old Style",Font.PLAIN,35));
+        option4.setBackground(Color.ORANGE);
+        option4.setForeground(Color.darkGray);
+        option4.addActionListener(this);
+
+
+        ans.add(option1);
+        ans.add(option2);
+        ans.add(option3);
+        ans.add(option4);
+        ans.setVisible(false);
+
+        try {
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(aud);
+            clip1 = AudioSystem.getClip();
+            clip1.open(audioStream);
+            clip1.start();
+        } catch (UnsupportedAudioFileException ex) {
+            throw new RuntimeException(ex);
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        } catch (LineUnavailableException ex) {
+            throw new RuntimeException(ex);
+        }
+
+
+        this.setVisible(true);
+
+
+    }
+
+    void resetButtonColors(){
+        option1.setBackground(Color.orange);
+        option2.setBackground(Color.orange);
+        option3.setBackground(Color.orange);
+        option4.setBackground(Color.orange);
+
+    }
+
+    void changeFrame(){
+        Quiz.current = Quiz.current.next;
+        currentAnswer = Quiz.current.answer;
+        if(Quiz.current.answer.equalsIgnoreCase("End")) {
+            displayScore();
+            return;
+        }
+        resetButtonColors();
+        randn = r.nextInt(1, 5);
+        Quiz.track++;
+        Timer timer1 =  new Timer();
+        this.quesNum.setText(Quiz.track + ") " + Quiz.current.question);
+        switch (randn) {
+            case 1:
+                this.option1.setText(Quiz.current.answer);
+                this.option2.setText(Quiz.current.side2);
+                this.option3.setText(Quiz.current.side3);
+                this.option4.setText(Quiz.current.side1);
+                break;
+            case 2:
+                this.option1.setText(Quiz.current.side1);
+                this.option2.setText(Quiz.current.answer);
+                this.option3.setText(Quiz.current.side2);
+                this.option4.setText(Quiz.current.side3);
+                break;
+            case 3:
+                this.option1.setText(Quiz.current.side1);
+                this.option2.setText(Quiz.current.side2);
+                this.option3.setText(Quiz.current.answer);
+                this.option4.setText(Quiz.current.side3);
+                break;
+            case 4:
+                this.option1.setText(Quiz.current.side1);
+                this.option2.setText(Quiz.current.side2);
+                this.option3.setText(Quiz.current.side3);
+                this.option4.setText(Quiz.current.answer);
+                break;
+        }
+
+    }
+
+    void displayScore(){
+        clip1.stop();
+        quesNum.setText("");
+        JLabel scoreDis = new JLabel();
+        scoreDis.setText("Your Final Score: "+score+"/"+Quiz.track);
+        scoreDis.setBounds(165,255,500,40);
+        scoreDis.setFont(new Font("Cooper Black",Font.BOLD,60));
+        this.setLayout(new BorderLayout());
+        scoreDis.setVerticalAlignment(JLabel.CENTER);
+        scoreDis.setHorizontalAlignment(JLabel.CENTER);
+        this.add(scoreDis);
+        timeCount.setVisible(false);
+        this.getContentPane().setBackground(Color.lightGray);
+        ques.setVisible(false);
+        ans.setVisible(false);
+        if(score<5){
+            try {
+                AudioInputStream audioStream = AudioSystem.getAudioInputStream(aud2);
+                Clip clip = AudioSystem.getClip();
+                clip.open(audioStream);
+                clip.start();
+            } catch (UnsupportedAudioFileException e) {
+                throw new RuntimeException(e);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } catch (LineUnavailableException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        else{
+            try {
+                AudioInputStream audioStream = AudioSystem.getAudioInputStream(aud3);
+                Clip clip = AudioSystem.getClip();
+                clip.open(audioStream);
+                clip.start();
+            } catch (UnsupportedAudioFileException e) {
+                throw new RuntimeException(e);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } catch (LineUnavailableException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+
+
+    }
+
+
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if(e.getSource() == option1){
+            if(option1.getText().equalsIgnoreCase(currentAnswer)){
+                option1.setBackground(Color.GREEN);
+                score++;
+                timeCount.setText("Score: "+score);
+            }
+            else{
+                option1.setBackground(Color.red);
+            }
+
+            javax.swing.Timer timer = new javax.swing.Timer(1000, new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    changeFrame();
+                }
+            });
+            timer.setRepeats(false); // Run only once
+            timer.start();
+        }
+        else if(e.getSource() == option2){
+            flag = 1;
+            if(option2.getText().equalsIgnoreCase(currentAnswer)){
+                option2.setBackground(Color.GREEN);
+                score++;
+                timeCount.setText("Score: "+score);
+            }
+            else{
+                option2.setBackground(Color.red);
+            }
+            javax.swing.Timer timer = new javax.swing.Timer(1000, new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    changeFrame();
+                }
+            });
+            timer.setRepeats(false); // Run only once
+            timer.start();
+        }
+        else if(e.getSource() == option3){
+            flag = 1;
+            if(option3.getText().equalsIgnoreCase(currentAnswer)){
+                option3.setBackground(Color.GREEN);
+                score++;
+                timeCount.setText("Score: "+score);
+            }
+            else{
+                option3.setBackground(Color.red);
+            }
+            javax.swing.Timer timer = new javax.swing.Timer(1000, new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    changeFrame();
+                }
+            });
+            timer.setRepeats(false); // Run only once
+            timer.start();
+
+        }
+        else if(e.getSource() == option4){
+            flag = 1;
+            if(option4.getText().equalsIgnoreCase(currentAnswer)){
+                option4.setBackground(Color.GREEN);
+                score++;
+                timeCount.setText("Score: "+score);
+            }
+            else{
+                option4.setBackground(Color.red);
+            }
+            javax.swing.Timer timer = new javax.swing.Timer(1000, new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    changeFrame();
+                }
+            });
+            timer.setRepeats(false); // Run only once
+            timer.start();
+        }
+        else if(e.getSource() == beginGame){
+            menu.setVisible(false);
+            scorePan.setVisible(true);
+            ques.setVisible(true);
+            ans.setVisible(true);
+
+
+        }
+    }
+
+}
+
+
+

@@ -1,0 +1,132 @@
+import java.util.Random;
+import java.util.Scanner;
+import java.util.Timer;
+import java.util.TimerTask;
+
+class Node
+{
+    String question;
+    String answer,side1,side2,side3;
+    Node next;
+
+    Node(String q, String a, String s1, String s2, String s3)
+    {
+        question = q;
+        answer = a;
+        side1 = s1;
+        side2 = s2;
+        side3 = s3;
+        next = null;
+    }
+}
+
+class Quiz {
+    private Node head;
+    public static Node current;
+    Scanner scanner = new Scanner(System.in);
+    Random rand = new Random();
+    int randomNum;
+    Screen frame;
+
+    int score = 0;
+    static int track = 1;
+
+    Quiz() {
+        head = null;
+    }
+
+    void addQuestion(String question, String answer, String s1, String s2, String s3) {
+        Node newNode = new Node(question, answer,s1,s2,s3);
+        if (head == null) {
+            head = newNode;
+        } else {
+            Node temp = head;
+            while (temp.next != null) {
+                temp = temp.next;
+            }
+            temp.next = newNode;
+        }
+    }
+
+     void displayFirstQuestion(){
+        if(current != null) {
+            randomNum = rand.nextInt(1, 5);
+            frame.currentAnswer = current.answer;
+            frame.quesNum.setText(track + ") " + current.question);
+
+//            frame.timer.schedule(frame.task, 0, 1000);
+
+            switch (randomNum) {
+                case 1:
+                    frame.option1.setText(current.answer);
+                    frame.option2.setText(current.side2);
+                    frame.option3.setText(current.side3);
+                    frame.option4.setText(current.side1);
+                    break;
+                case 2:
+                    frame.option1.setText(current.side1);
+                    frame.option2.setText(current.answer);
+                    frame.option3.setText(current.side2);
+                    frame.option4.setText(current.side3);
+                    break;
+                case 3:
+                    frame.option1.setText(current.side1);
+                    frame.option2.setText(current.side2);
+                    frame.option3.setText(current.answer);
+                    frame.option4.setText(current.side3);
+                    break;
+                case 4:
+                    frame.option1.setText(current.side1);
+                    frame.option2.setText(current.side2);
+                    frame.option3.setText(current.side3);
+                    frame.option4.setText(current.answer);
+                    break;
+            }
+//            for(int i=10;i>=0;i--){
+//                frame.timeCount.setText("Time: "+i);
+//                try {
+//                    if(frame.flag==1){
+//                        frame.flag = 0;
+//                        break;
+//                    }
+//                    Thread.sleep(1000);
+//                } catch (InterruptedException e) {
+//                    System.out.println("Error in Time Thread");
+//                }
+//            }
+//            frame.changeFrame();
+
+        }
+    }
+
+    void startQuiz() {
+        current = head;
+        frame = new Screen(current);
+        frame.currentAnswer = current.answer;
+    }
+
+}
+
+
+public class Main {
+    public static void main(String[] args) {
+        Quiz quiz = new Quiz();
+        //Add questions and answers
+        quiz.addQuestion("What is the capital of France?", "Paris","Belfast","Cardiff","Amsterdam");
+        quiz.addQuestion("What is the largest mammal?", "Blue Whale","Elephant","Jenica","Gorilla");
+        quiz.addQuestion("What do cows drink?", "Water","Milk","Cyclohexane","Petrol");
+        quiz.addQuestion("How many albums does Taylor Swift have?", "14","34","9","36");
+        quiz.addQuestion("What is the tallest Mountain in the world?", "Mt. Everest","The Alps","The Himalayas","Mt. Fuji");
+        quiz.addQuestion("Which of the following is not a mythical creature?", "Achilles","Tooth Fairy","Unicorn","Big Foot");
+        quiz.addQuestion("The best video game series?", "Assassin's Creed","GTA","God of War","League of Legends");
+        quiz.addQuestion("The colour of hippopotamus milk is ___", "Pink","Sage","Teal","Cerulean");
+        quiz.addQuestion("What is the second most visited website in the world?", "youtube.com", "google.com", "gmail.com", "facebook.com");
+        quiz.addQuestion("Who is the prettiest lady on earth?", "Prathiba","Sujatha M","Shruthi Anchan","Glevina");
+
+
+
+        quiz.addQuestion("End","End","End","End","End");
+        // Start the quiz
+        quiz.startQuiz();
+    }
+}
